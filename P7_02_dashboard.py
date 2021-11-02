@@ -365,8 +365,6 @@ def plot_kde(dataset, var, title_var, value):
 
     plt.legend()
 
-    plt.show()
-
     return fig
 
 
