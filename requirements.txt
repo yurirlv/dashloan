@@ -4,7 +4,7 @@ imblearn==0.0
 keras==2.6.0
 Keras-Preprocessing==1.1.2
 lightgbm==3.2.1
-matplotlib @ file:///C:/ci/matplotlib-base_1597858387645/work
+matplotlib==3.3.1
 mglearn==0.1.9
 missingno==0.4.2
 numpy==1.19.5
