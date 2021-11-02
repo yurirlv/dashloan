@@ -15,15 +15,6 @@ import shap
 import plotly.graph_objects            as go
 
 
-#from   sklearn.impute                  import SimpleImputer, IterativeImputer
-
-#from   sklearn.preprocessing           import LabelEncoder, OneHotEncoder, OrdinalEncoder
-#from   sklearn.preprocessing           import PolynomialFeatures
-
-#from   sklearn.model_selection         import train_test_split
-
-#from   sklearn                         import preprocessing
-
 from   sklearn                         import model_selection
 from   sklearn                         import linear_model
 from   sklearn                         import metrics, dummy
@@ -318,7 +309,6 @@ def create_checkbox(data, var):
 
     # Graphs
 
-@st.cache
 def plot_kde(dataset, var, title_var, value):
     
     plt.figure(figsize = (5, 5))
@@ -356,8 +346,6 @@ def plot_kde(dataset, var, title_var, value):
     
     #ax.set_xticks(xt)
     #ax.get_xticklabels()[np.where(xt == value)[0][0]].set_color("red")
-
-    var_data = data[var]
 
     plt.axvline(value, color='b', linestyle='--', linewidth=1.5, label=str(value))
 
