@@ -222,10 +222,10 @@ def load_data(file_name):
     state = st.text('Loading clients dataset...')
 
     try:
-        data  = pd.read_csv("results/" + file_name, index_col='id')
+        data  = pd.read_csv("dashloan/results/" + file_name, index_col='id')
 
     except:
-        data  = pd.read_csv("results/" + file_name, index_col=0)
+        data  = pd.read_csv("dashloan/results/" + file_name, index_col=0)
 
     if "Unnamed: 0" in data.columns.to_list():
         data = data.drop("Unnamed: 0", axis=0)
@@ -267,7 +267,7 @@ def create_double_slider(object, data, var):
         step = 1.0
 
     else:
-        step = 1
+        step = 1.0
 
     choices = object.slider(name, 
                             value     = [data[var].min(), data[var].max()],
