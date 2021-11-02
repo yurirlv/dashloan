@@ -46,9 +46,6 @@ from   imblearn.under_sampling         import RandomUnderSampler
 import lightgbm                        as lgb
 from   catboost                        import CatBoostClassifier
 
-from   quilt.data.ResidentMario        import missingno_data
-import missingno                       as msno
-
 
 import collections
 from   collections                     import Counter
