@@ -8,21 +8,16 @@ matplotlib==3.3.1
 mglearn==0.1.9
 missingno==0.4.2
 numpy==1.19.5
-numpydoc @ file:///tmp/build/80754af9/numpydoc_1594166760263/work
-pandas @ file:///C:/ci/pandas_1601567340151/work
+pandas==1.1.2
 pandas-flavor==0.2.0
 pandas-ml==0.6.1
-path @ file:///C:/ci/path_1596940809557/work
-pathlib2 @ file:///C:/ci/pathlib2_1594381094851/work
 pep8==1.7.1
 plotly==5.0.0
 pycurl==7.43.0.2
 pydantic==1.8.2
-regex @ file:///C:/ci/regex_1596827857056/work
-requests @ file:///tmp/build/80754af9/requests_1592841827918/work
 scikit-image==0.16.2
 scikit-learn==1.0
-scipy @ file:///C:/ci/scipy_1597686737426/work
-seaborn @ file:///tmp/build/80754af9/seaborn_1600553570093/work
+scipy==1.5.2
+seaborn==0.11.0
 six==1.15.0
 streamlit==1.0.0
