@@ -221,7 +221,11 @@ def load_data(file_name):
 
     state = st.text('Loading clients dataset...')
 
-    data  = pd.read_csv("results/" + file_name, index_col='id')
+    try:
+        data  = pd.read_csv("results/" + file_name, index_col='id')
+
+    except:
+        data  = pd.read_csv("results/" + file_name, index_col=0)
 
     if "Unnamed: 0" in data.columns.to_list():
         data = data.drop("Unnamed: 0", axis=0)
