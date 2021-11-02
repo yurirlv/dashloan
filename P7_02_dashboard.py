@@ -270,9 +270,9 @@ def create_double_slider(object, data, var):
         step = 1
 
     choices = object.slider(name, 
-                            value     = [data[var].min(), data[var].max()],
-                            min_value = data[var].min(),
-                            max_value = data[var].max(),
+                            value     = [int(data[var].min()),int( data[var].max())],
+                            min_value = int(data[var].min()),
+                            max_value = int(data[var].max()),
                             #step      = step                  
                             )
 
