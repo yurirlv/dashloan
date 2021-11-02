@@ -179,7 +179,7 @@ def check_filters(filters_dict, data):
             
             if values != ():
 
-                if values[0] != data[filter].min() or values[1] != data[filter].max():
+                if values[0] != int(data[filter].min()) or values[1] != int(data[filter].max()):
 
                     st.write("    **{}** : {}".format(filter.replace('_', ' ').title(), ' - '.join([str(values[0]), str(values[1])])))
                     new_dict[filter] = values              
