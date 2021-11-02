@@ -264,7 +264,7 @@ def create_double_slider(object, data, var):
     name    = var.replace('_', ' ').title()
 
     if type(data[var].min()) == float:
-        step = 1
+        step = 1.0
 
     else:
         step = 1
@@ -273,7 +273,7 @@ def create_double_slider(object, data, var):
                             value     = [data[var].min(), data[var].max()],
                             min_value = data[var].min(),
                             max_value = data[var].max(),
-                            step      = step                    
+                            step      = 1                    
                             )
 
     return choices
