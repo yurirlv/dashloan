@@ -4,113 +4,65 @@
 # LIBRAIRIES
 
 
-import sys
-import timeit
-from   os                              import listdir
-import warnings
-
 import numpy                           as np
 import pandas                          as pd
 import matplotlib.pyplot               as plt
 import seaborn                         as sns
 
-import matplotlib                      as mpl
-from   matplotlib                      import cm
+#from   matplotlib                      import cm
 
-from   matplotlib.collections          import LineCollection
-
-
-from   sklearn.experimental            import enable_iterative_imputer 
-from   sklearn.impute                  import SimpleImputer, IterativeImputer
-
-from   sklearn.preprocessing           import LabelEncoder, OneHotEncoder, OrdinalEncoder
-from   sklearn.preprocessing           import PolynomialFeatures
-
-from   sklearn.model_selection         import train_test_split
-
-from   sklearn                         import decomposition
-from   sklearn                         import manifold
-from   sklearn                         import preprocessing
-
-from   sklearn                         import model_selection
-from   sklearn                         import linear_model
-
-from   sklearn.linear_model            import Ridge, LogisticRegression
-from   sklearn.svm                     import LinearSVC, SVC, SVR
-from   sklearn                         import neighbors, kernel_ridge, dummy
-
-from   sklearn.model_selection         import cross_val_score
-from   sklearn.model_selection         import GridSearchCV
-from   sklearn.model_selection         import StratifiedKFold
-
-from   sklearn                         import metrics, dummy, cluster
-from   sklearn.metrics                 import roc_curve, auc
-
-
-from   sklearn.ensemble                import BaggingRegressor, BaggingClassifier
-from   sklearn.ensemble                import RandomForestRegressor, RandomForestClassifier
-from   sklearn.ensemble                import GradientBoostingRegressor, GradientBoostingClassifier
-from   sklearn.feature_selection       import SelectFromModel
-
-from   sklearn.feature_extraction.text import TfidfVectorizer 
-from   imblearn.under_sampling         import RandomUnderSampler
-
-import lightgbm                        as lgb
-from   catboost                        import Pool, CatBoostRegressor, CatBoostClassifier
-
-
-from   mglearn.plot_interactive_tree   import plot_tree_partition
-from   mglearn.plot_2d_separator       import plot_2d_separator
-from   mglearn.tools                   import discrete_scatter
-
-import scipy.stats                     as     st
-from   scipy.cluster.hierarchy         import dendrogram
-import scipy.cluster.hierarchy         as shc
-
-from   quilt.data.ResidentMario        import missingno_data
-import missingno                       as msno
-
-from   ipywidgets                      import interact, interactive, fixed, interact_manual
-import ipywidgets                      as widgets
-from   IPython.display                 import display
-
-# import nltk
-# from   nltk.corpus                     import wordnet
-# from   nltk.stem.snowball              import EnglishStemmer
-# from   nltk.stem                       import WordNetLemmatizer
-
-# from   wordcloud                       import WordCloud, STOPWORDS, ImageColorGenerator
-
-# from   sklearn.decomposition           import LatentDirichletAllocation
-# from   sklearn.feature_extraction.text import CountVectorizer 
-
-# from   keras.applications.vgg16        import VGG16
-# from   keras.preprocessing.image       import load_img, img_to_array
-# from   keras.applications.vgg16        import preprocess_input
-# from   keras.applications.vgg16        import decode_predictions
-# from   keras.layers                    import Dense
-# from   keras                           import Model
-
-# from   PIL                             import Image, ImageOps, ImageFilter
-# import cv2
-
-import streamlit                       as st
-import streamlit.components.v1         as components
-
-import collections
-from   collections                     import Counter
-
-import pickle
 import shap
 import plotly.graph_objects            as go
 
 
+#from   sklearn.impute                  import SimpleImputer, IterativeImputer
+
+#from   sklearn.preprocessing           import LabelEncoder, OneHotEncoder, OrdinalEncoder
+#from   sklearn.preprocessing           import PolynomialFeatures
+
+#from   sklearn.model_selection         import train_test_split
+
+#from   sklearn                         import preprocessing
+
+from   sklearn                         import model_selection
+from   sklearn                         import linear_model
+from   sklearn                         import metrics, dummy
+
+from   sklearn                         import neighbors, kernel_ridge
+
+from   sklearn.metrics                 import roc_curve, auc
+
+from   sklearn.linear_model            import Ridge, LogisticRegression
+from   sklearn.model_selection         import StratifiedKFold
+from   sklearn.feature_selection       import SelectFromModel
+
+
+from   sklearn.ensemble                import BaggingClassifier
+from   sklearn.ensemble                import RandomForestClassifier
+from   sklearn.ensemble                import GradientBoostingClassifier
+
+from   imblearn.under_sampling         import RandomUnderSampler
+
+import lightgbm                        as lgb
+from   catboost                        import CatBoostClassifier
+
+from   quilt.data.ResidentMario        import missingno_data
+import missingno                       as msno
+
+
+import collections
+from   collections                     import Counter
+import pickle
+
+
 import ast
-import pprint
 import time
 
 import datetime
 import re
+
+import streamlit                       as st
+import streamlit.components.v1         as components
 
 
 
@@ -122,7 +74,7 @@ gender              = []
 edu                 = []
 family_status       = []
 family_nb           = ()
-chidren_nb          = ()
+children_nb         = ()
 work                = []
 orga_type           = []
 work_exp            = ()
@@ -138,13 +90,13 @@ annuity             = ()
 credit_term         = ()
 credit_time         = ()
 
-best_feat      = ['target',
+best_feats     = ['target',
                   'age',
                   'gender',
                   'education_type',
                   'family_status',
                   'family_nb',
-                  'chidren_nb',
+                  'children_nb',
                   'work_type',
                   'organization_type',
                   'work_exp',
@@ -160,6 +112,46 @@ best_feat      = ['target',
                   'credit_term',
                   'credit_time_elapsed'
                   ]
+
+#best_raw_feats = ['target',
+#                  'age',
+#                  'gender',
+#                  'education_type',
+#                  'family_status',
+#                  'family_nb',
+#                  'children_nb',
+#                  'work_type',
+#                  'organization_type',
+#                  'work_exp',
+#                  'income_amount',
+#                  'income_type',
+#                  'contract',
+#                  'credit_amount',
+#                  'goods_price',
+#                  'annuity',
+#                  'credit_time_elapsed'
+#                  ]
+
+one_hot_feats = ["gender",
+                 "family_status",
+                 "type_suite",
+                 "education_type",
+                 "work_type",
+                 "organization_type",
+                 "income_type",
+                 "appr_process_weekday",
+                 "housing_type",
+                 "fondkapremont_mode",
+                 "house_type_mode",
+                 "walls_material_mode",
+                 "emergency_state_mode",
+                ]   
+
+label_feats   = ['contract', 
+                 'own_car', 
+                 'own_realty'
+                ]
+
 
 
 ### FUNCTIONS
@@ -325,6 +317,7 @@ def create_checkbox(data, var):
 
     # Graphs
 
+@st.cache
 def plot_kde(dataset, var, title_var, value):
     
     plt.figure(figsize = (5, 5))
@@ -375,6 +368,215 @@ def plot_kde(dataset, var, title_var, value):
 
     return fig
 
+
+    # Preprocessing
+
+def complete_client_df(client_df, data_template_cols, one_hot_feats):
+    
+    full_df = pd.DataFrame(client_df, columns=data_template_cols)
+    
+    for var in one_hot_feats:
+        
+        value    = client_df[var].values[0]
+        oh_feats = [feat for feat in data_template_cols if feat.startswith(var)]
+        
+        if type(value) == str:
+
+            for feat in oh_feats:
+
+                if feat.endswith(value):
+                    full_df[feat] = 1
+
+                else:
+                    full_df[feat] = 0
+                
+    return full_df
+
+def add_poly_feat(data, poly_transformer):
+    
+    ext_data_df       = data[['ext_source_1', 
+                              'ext_source_2', 
+                              'ext_source_3', 
+                              'age', 
+                              'work_exp', 
+                             ]
+                            ]
+    
+    ext_feat          = poly_transformer.fit_transform(ext_data_df)
+    
+    ext_data_df       = pd.DataFrame(ext_feat, 
+                                     index   = ext_data_df.index,
+                                     columns = poly_transformer.get_feature_names(['ext_source_1', 
+                                                                                   'ext_source_2', 
+                                                                                   'ext_source_3',  
+                                                                                   'age', 
+                                                                                   'work_exp',
+                                                                                  ]
+                                                                                  )
+                                    )
+
+    ext_data_df       = ext_data_df.drop(['ext_source_1', 
+                                          'ext_source_2', 
+                                          'ext_source_3',  
+                                          'age', 
+                                          'work_exp', 
+                                          '1'
+                                         ], axis=1
+                                        )
+
+    ext_data_df       = ext_data_df.loc[:, ~ext_data_df.columns.duplicated()]
+    
+    data              = data.merge(ext_data_df, right_index=True, left_index=True) 
+    
+    return data
+
+def add_domain_feat(data, work_exp_outliers):
+     
+    data['work_exp_outliers'] = work_exp_outliers
+    
+    data['debt_rate']         = (data['credit_amount'] / data['income_amount'] * 100).round(2)
+    data['debt_load']         = (data['annuity'] / data['income_amount'] * 100).round(2)
+    data['credit_term']       = (data['credit_amount'] / data['annuity']).round(2)
+
+    data['cover_rate']        = (data['credit_amount'] / data['goods_price'] * 100).round(2)
+
+    data['work_exp_rate']     = (data['work_exp'] / data['age'] * 100).round(2)    
+
+    return data
+
+def standardize_client_df(client_df, domain_std_scaler):
+    
+    X         = client_df.drop('target', axis=1)
+    y         = client_df.target
+    
+    X_std     = domain_std_scaler.transform(X)
+    
+    client_df = pd.DataFrame(X_std, index=X.index, columns=X.columns)
+    
+    client_df['target'] = y
+    
+    return client_df
+
+def clean_client_df(client_df, label_encoders, iterative_imputer, poly_transformer, domain_std_scaler, 
+                    data_template_cols, label_feats, one_hot_feats):
+    
+    
+    # Encoding
+    
+    for var in label_feats:
+    
+        results        = label_encoders[var].transform(client_df[[var]])
+        client_df[var] = list(results.reshape(1, -1)[0].astype(int))
+    
+    client_df          = complete_client_df(client_df, data_template_cols, one_hot_feats)
+    
+        
+    # Cleaning
+    
+    client_df.age            = client_df.age / -365.25
+
+    work_experience_outliers = client_df.work_exp > 0
+    client_df.work_exp       = client_df.work_exp.replace({365243: np.nan}) / -365.25
+
+    
+    # Imputing
+    
+    target    = client_df[['target']]
+    X         = client_df.drop("target", axis=1)
+    
+    client_df = iterative_imputer.transform(X)
+    
+    client_df = pd.DataFrame(client_df, index=X.index, columns=X.columns)   
+    client_df = client_df.merge(target, left_index=True, right_index=True)
+    
+    
+    # Polynomial Features
+    
+    client_df = add_poly_feat(client_df, poly_transformer)
+    
+       
+    # Domain Features
+    
+    client_df = add_domain_feat(client_df, work_experience_outliers)
+    
+    
+    # Standardisation
+    
+    std_client_df = standardize_client_df(client_df, domain_std_scaler)
+    
+    return std_client_df, client_df
+
+
+    # Modelisation
+
+def get_client_dict(client_id, raw_data):
+    
+    client_data       = raw_data[raw_data.index == client_id]
+    
+    client_data['id'] = client_id
+
+    return client_data.to_dict(orient='records')[0]
+
+def get_client_df(client_dict):
+    
+    client_series      = pd.Series(client_dict)
+    client_series.name = client_dict['id']
+    
+    client_df          = client_series.to_frame().T
+    
+    return client_df.drop('id', axis=1)
+
+
+def get_threshold_scores(fbeta_results, dataset_name, model_name):
+    
+    y_test       = fbeta_results[dataset_name]['results'][model_name]['y_test']
+    y_proba      = fbeta_results[dataset_name]['results'][model_name]['y_proba']
+
+    thresholds   = []
+    scores       = []
+
+    for threshold in np.arange(0, 1.01, 0.01):
+
+        y_pred   = np.where(y_proba > threshold, 1, 0)
+        score    = metrics.fbeta_score(y_test, y_pred, beta=2)
+
+        thresholds.append(round(threshold, 2))
+        scores.append(score)
+    
+    return thresholds, scores
+
+def predict_client(cleaned_client_df, fbeta_results, dataset_name, model_name):
+    
+    thresholds, scores = get_threshold_scores(fbeta_results, dataset_name, model_name)
+
+    model              = fbeta_results[dataset_name]['results'][model_name]['model']
+
+    best_score         = max(scores)
+    best_score_idx     = scores.index(best_score)
+
+    best_threshold     = thresholds[best_score_idx]
+
+    client_X           = cleaned_client_df.drop('target', axis=1).values
+    repaid_proba       = model.predict_proba(client_X)[0][0]
+        
+    return repaid_proba, best_threshold
+
+def get_client_result(repaid_proba, best_threshold):
+    
+    if repaid_proba < best_threshold:
+        bar_color      = "red"
+        result         = "refused"
+
+    elif repaid_proba >= best_threshold:
+        bar_color      = "seagreen"
+        result         = "accepted"
+        
+    return bar_color, result
+
+
+    # Data Visualisation
+
+@st.cache
 def get_gauge(repaid_proba, best_threshold, bar_color):
     
     plt.figure(figsize = (7, 7))
@@ -409,11 +611,15 @@ def get_gauge(repaid_proba, best_threshold, bar_color):
 
     return fig
 
-def plot_shap(plot, height=None):
+@st.cache
+def get_shap_values(model, model_data):
+    
+    explainer    = shap.TreeExplainer(model)    
+    shap_values  = explainer.shap_values(model_data.drop('target', axis=1).values)
+    
+    return explainer, shap_values
 
-    shap_html = f"<head>{shap.getjs()}</head><body>{plot.html()}</body>"
-    components.html(shap_html, height=height)
-
+@st.cache(allow_output_mutation=True)
 def get_force_plot(model, model_data, shap_data, client_id):
     
     (explainer, 
@@ -437,38 +643,40 @@ def get_force_plot(model, model_data, shap_data, client_id):
     
     return fig
 
+#@st.cache(suppress_st_warning=True)
+def plot_shap(plot, height=None):
 
-    # Model
+    shap_html = f"<head>{shap.getjs()}</head><body>{plot.html()}</body>"
 
-@st.cache
-def get_threshold_scores(results_dict, model_idx):
+    components.html(shap_html, height=height)
 
-    model_name   = list(results_dict.keys())[model_idx]
+def plot_lgbm_features_importances(light_gbm, data_template_cols, top_nb=40):
     
-    y_test       = results_dict[model_name]['y_test']
-    y_proba      = results_dict[model_name]['y_proba']
-
-    thresholds   = []
-    scores       = []
-
-    for threshold in np.arange(0, 1.01, 0.01):
-
-        y_pred   = np.where(y_proba > threshold, 1, 0)
-        score    = metrics.fbeta_score(y_test, y_pred, beta=2)
-
-        thresholds.append(round(threshold, 2))
-        scores.append(score)
+    feature_imp = pd.DataFrame(sorted(zip(light_gbm.feature_importances_, data_template_cols)), columns=['Value','Feature'])
     
-    return thresholds, scores
+    plt.figure(figsize=(20, 12))
 
-@st.cache
-def get_shap_values(model, model_data):
-    
-    explainer    = shap.TreeExplainer(model)    
-    shap_values  = explainer.shap_values(model_data.drop('target', axis=1).values)
-    
-    return explainer, shap_values
+    fig = sns.barplot(x    = "Value", 
+                      y    = "Feature", 
+                      data = feature_imp.sort_values(by        = "Value", 
+                                                     ascending = False
+                                                    ).head(top_nb),
+                      palette = "hot"
+                     )
 
+    plt.title('{} - Top {} Features'.format(model_name, top_nb),
+              fontsize   = 20, 
+              fontweight = "bold", 
+              pad        = 20 
+             )
+
+    plt.xlabel("Value", fontsize=13)
+    plt.ylabel("Feature", fontsize=13)
+
+    plt.tight_layout()
+    #plt.show()
+
+    return fig
 
 
 ### DASHBOARD APP
@@ -482,14 +690,14 @@ page = st.sidebar.radio("", ["Home", "Exploration", "Comparison", "Scoring", "Me
 if page == "Home":
 
     st.header("DashLoan")
-    st.markdown("### The **Loan** granding **Dashboard**")
+    st.markdown("### The loan granding dashboard")
 
 
 # EXPLORATION PAGE
 
 if page == "Exploration":
 
-    st.header("**Explore** your clients data")
+    st.header("**Explore** clients data")
 
 
         # Data
@@ -564,7 +772,7 @@ if page == "Exploration":
         family_status = create_multiselect   (st.sidebar, data, 'family_status')
         #type_suite    = create_multiselect   (st.sidebar, data, 'type_suite')
         family_nb     = create_double_slider (st.sidebar, data, "family_nb")
-        chidren_nb    = create_double_slider (st.sidebar, data, "chidren_nb")
+        children_nb   = create_double_slider (st.sidebar, data, "children_nb")
   
 
             # Work
@@ -608,7 +816,7 @@ if page == "Exploration":
                        'education_type'      : edu,
                        'family_status'       : family_status,
                        'family_nb'           : family_nb,
-                       'chidren_nb'          : chidren_nb,
+                       'children_nb'         : children_nb,
                        'work_type'           : work,
                        'organization_type'   : orga_type, 
                        'work_exp'            : work_exp, 
@@ -641,7 +849,7 @@ if page == "Exploration":
 
             st.text(" \n")
             st.subheader('Statistics : {}% default rate'.format(round(filtered_data.target.replace({"repaid":0, "default":1}).mean()*100, 2)))
-            stats         = filtered_data[best_feat].describe()
+            stats         = filtered_data[best_feats].describe()
             st.write(stats.T[['mean', 'std', 'min', 'max']])
 
 
@@ -649,7 +857,7 @@ if page == "Exploration":
 
 if page == "Comparison":
 
-    st.header("**Compare** your clients together")
+    st.header("**Compare** clients data")
 
 
         # Data
@@ -662,9 +870,8 @@ if page == "Comparison":
 
     st.sidebar.markdown("# Client Infos")
 
-    #client_id   = st.sidebar.text_input("", "Enter the ID of a client...")
     client_id   = st.sidebar.selectbox("", options=data.index.tolist())
-    client_data = data[data.index == float(client_id)][best_feat].drop(['family_nb', 'organization_type'], axis=1)
+    client_data = data[data.index == float(client_id)][best_feats].drop(['family_nb', 'organization_type'], axis=1)
 
     st.sidebar.text(" \n")
 
@@ -732,7 +939,7 @@ if page == "Comparison":
         family_status = create_multiselect   (st.sidebar, data, 'family_status')
         #type_suite    = create_multiselect   (st.sidebar, data, 'type_suite')
         family_nb     = create_double_slider (st.sidebar, data, "family_nb")
-        chidren_nb    = create_double_slider (st.sidebar, data, "chidren_nb")
+        children_nb   = create_double_slider (st.sidebar, data, "children_nb")
   
 
             # Work
@@ -776,7 +983,7 @@ if page == "Comparison":
                        'education_type'      : edu,
                        'family_status'       : family_status,
                        'family_nb'           : family_nb,
-                       'chidren_nb'          : chidren_nb,
+                       'children_nb'         : children_nb,
                        'work_type'           : work,
                        'organization_type'   : orga_type, 
                        'work_exp'            : work_exp, 
@@ -824,7 +1031,7 @@ if page == "Comparison":
         chart_2 = plot_kde(filtered_data, var, var.replace('_', ' ').title(), client_data.loc[float(client_id), var])
         col_2.pyplot()
 
-        #var = "chidren_nb"
+        #var = "children_nb"
         #chart_3 = plot_kde(filtered_data, var, var.replace('_', ' ').title(), client_data.loc[float(client_id), var])
         #col_3.pyplot()
                  
@@ -861,19 +1068,30 @@ if page == "Comparison":
 
 if page == "Scoring":
 
-    st.header("**Explain** your decision")
+    st.header("**Explain** scoring")
 
 
-        # Data
+        # Data & Model
 
-    data          = load_data("exploration_data.csv")
-    shap_data     = load_data("shap_data.csv")
-    model_data    = load_data("scoring_data.csv")
-    
-    fbeta_results = pickle.load(open("results/fbeta_results.pickle", "rb"))
+    data               = load_data("exploration_data.csv")
+    raw_data           = load_data("data.csv")
 
-    model_name    = 'Light GBM (max depth : 7)'
-    light_gbm     = fbeta_results['domain_feat']['results'][model_name]['model']
+    data_template_cols = pickle.load(open("results/data_template_cols.pickle", "rb"))
+
+    label_encoders     = pickle.load(open("results/label_encoders.pickle", "rb"))
+    iterative_imputer  = pickle.load(open("results/iterative_imputer.pickle", "rb"))
+    poly_transformer   = pickle.load(open("results/poly_transformer.pickle", "rb"))
+    domain_std_scaler  = pickle.load(open("results/domain_std_scaler.pickle", "rb"))
+
+    dataset_name       = "domain_feat"
+    model_title        = 'Light GBM'
+
+    fbeta_results      = pickle.load(open("results/fbeta_results.pickle", "rb"))
+    fb_results_dict    = fbeta_results[dataset_name]['results']
+
+    model_name         = [name for name in fb_results_dict.keys() if name.startswith(model_title)][0]
+    model              = fb_results_dict[model_name]['model']
+
 
     #st.write(data.head(100))
 
@@ -882,9 +1100,12 @@ if page == "Scoring":
 
     st.sidebar.markdown("# Client Infos")
 
-    #client_id   = st.sidebar.text_input("", "Enter the ID of a client...")
     client_id   = st.sidebar.selectbox("", options=data.index.tolist())
-    client_data = data[data.index == float(client_id)][best_feat].drop(['family_nb', 'organization_type'], axis=1)
+
+    client_dict = get_client_dict(client_id, raw_data)
+    client_df   = get_client_df(client_dict)
+
+    client_data = data[data.index == float(client_id)][best_feats].drop(['family_nb', 'organization_type'], axis=1)
 
     st.sidebar.text(" \n")
 
@@ -898,27 +1119,23 @@ if page == "Scoring":
     if client_id not in ["Enter the ID of a client...", None, ""]:
 
 
-        # Gauge
+        # Preprocessing
 
-        thresholds, scores = get_threshold_scores(fbeta_results['domain_feat']['results'], -1)
+        (std_client_df, 
+         client_df)       = clean_client_df(client_df, label_encoders, iterative_imputer, poly_transformer, domain_std_scaler, 
+                                            data_template_cols, label_feats, one_hot_feats
+                                           )
 
-        best_score         = max(scores)
-        best_score_idx     = scores.index(best_score)
+        # Modelisation
 
-        best_threshold     = thresholds[best_score_idx]
+        (repaid_proba, 
+         best_threshold) = predict_client(client_df, fbeta_results, dataset_name, model_name)
 
-        client_data        = model_data[model_data.index == client_id]
+        (bar_color, 
+         result)         = get_client_result(repaid_proba, best_threshold)
 
-        client_X           = client_data.drop('target', axis=1).values
-        repaid_proba       = light_gbm.predict_proba(client_X)[0][0]
 
-        if repaid_proba < best_threshold:
-            bar_color      = "red"
-            result         = "refused"
-
-        elif repaid_proba >= best_threshold:
-            bar_color      = "seagreen"
-            result         = "accepted"
+        # Plot Gauge
 
         st.text(" \n")
         st.subheader('Decision : loan {}'.format(result))
@@ -927,12 +1144,27 @@ if page == "Scoring":
         st.plotly_chart(gauge)
 
 
-        # Force Plot 
+        # Plot Force 
 
-        st.text(" \n")
-        st.subheader('Explanation : {}% repaid probability'.format(round(repaid_proba * 100, 2)))
+        if model_title == 'Light GBM':
 
-        force = get_force_plot(light_gbm, model_data, shap_data, client_id)
-        plot_shap(force)
+            st.text(" \n")
+            st.subheader('Explanation : {}% repaid probability'.format(round(repaid_proba * 100, 2)))
+
+            force = get_force_plot(model, std_client_df, client_df, client_df.index[0])
+            plot_shap(force)
+
+
+        # Plot Light GBM Features Importances
+
+        #if model_title == 'Light GBM':
+
+        #    top_nb = 40
+
+        #    st.text(" \n")
+        #    st.subheader('Model {} : most {} important features'.format(model_title, top_nb))
+
+        #    feat_imp = plot_lgbm_features_importances(model, data_template_cols, top_nb)
+        #    st.pyplot(feat_imp)
 
 
