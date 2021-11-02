@@ -1,29 +1,9 @@
-anaconda-client==1.7.2
-anaconda-navigator==1.9.12
-anaconda-project==0.8.3
 catboost==0.26
-conda==4.10.1
-conda-build==3.15.1
-conda-package-handling==1.7.0
-conda-verify==3.4.2
 imbalanced-learn==0.8.1
 imblearn==0.0
-joblib @ file:///tmp/build/80754af9/joblib_1601912903842/work
-json5==0.9.5
-jsonschema @ file:///C:/ci/jsonschema_1594363671836/work
-jupyter==1.0.0
-jupyter-client @ file:///tmp/build/80754af9/jupyter_client_1601311786391/work
-jupyter-console @ file:///tmp/build/80754af9/jupyter_console_1598884538475/work
-jupyter-core==4.6.3
-jupyterlab==2.2.6
-jupyterlab-launcher @ file:///tmp/build/80754af9/jupyterlab_launcher_1601490670252/work
-jupyterlab-pygments @ file:///tmp/build/80754af9/jupyterlab_pygments_1601490720602/work
-jupyterlab-server @ file:///tmp/build/80754af9/jupyterlab_server_1594164409481/work
 keras==2.6.0
 Keras-Preprocessing==1.1.2
-keyring @ file:///C:/ci/keyring_1601488971022/work
 lightgbm==3.2.1
-lxml @ file:///C:/ci/lxml_1594826938446/work
 matplotlib @ file:///C:/ci/matplotlib-base_1597858387645/work
 mglearn==0.1.9
 missingno==0.4.2
@@ -35,12 +15,9 @@ pandas-ml==0.6.1
 path @ file:///C:/ci/path_1596940809557/work
 pathlib2 @ file:///C:/ci/pathlib2_1594381094851/work
 pep8==1.7.1
-Pillow @ file:///C:/ci/pillow_1594298234712/work
 plotly==5.0.0
 pycurl==7.43.0.2
 pydantic==1.8.2
-pyparsing==2.4.7
-pytz==2020.1
 regex @ file:///C:/ci/regex_1596827857056/work
 requests @ file:///tmp/build/80754af9/requests_1592841827918/work
 scikit-image==0.16.2
@@ -49,20 +26,3 @@ scipy @ file:///C:/ci/scipy_1597686737426/work
 seaborn @ file:///tmp/build/80754af9/seaborn_1600553570093/work
 six==1.15.0
 streamlit==1.0.0
-tables==3.6.1
-tabulate==0.8.7
-tenacity==7.0.0
-tensorboard==2.6.0
-tensorboard-data-server==0.6.1
-tensorboard-plugin-wit==1.8.0
-tensorflow==2.6.0
-tensorflow-estimator==2.6.0
-tzdata==2021.2.post0
-tzlocal==3.0
-ujson==1.35
-unicodecsv==0.14.1
-uritemplate==3.0.1
-urllib3 @ file:///tmp/build/80754af9/urllib3_1597086586889/work
-uvicorn==0.15.0
-validators==0.18.2
-
