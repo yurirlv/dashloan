@@ -4,6 +4,5 @@ matplotlib
 seaborn
 shap
 plotly
-json
 requests
 streamlit
