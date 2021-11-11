@@ -9,45 +9,13 @@ import pandas                          as pd
 import matplotlib.pyplot               as plt
 import seaborn                         as sns
 
-#from   matplotlib                      import cm
-
 import shap
 import plotly.graph_objects            as go
 
-
-from   sklearn                         import model_selection
-from   sklearn                         import linear_model
-from   sklearn                         import metrics, dummy
-
-from   sklearn                         import neighbors, kernel_ridge
-
-from   sklearn.metrics                 import roc_curve, auc
-
-from   sklearn.linear_model            import Ridge, LogisticRegression
-from   sklearn.model_selection         import StratifiedKFold
-from   sklearn.feature_selection       import SelectFromModel
-
-
-from   sklearn.ensemble                import BaggingClassifier
-from   sklearn.ensemble                import RandomForestClassifier
-from   sklearn.ensemble                import GradientBoostingClassifier
-
-from   imblearn.under_sampling         import RandomUnderSampler
-
-import lightgbm                        as lgb
-from   catboost                        import CatBoostClassifier
-
-
-import collections
-from   collections                     import Counter
 import pickle
+import json
 
-
-import ast
-import time
-
-import datetime
-import re
+import requests
 
 import streamlit                       as st
 import streamlit.components.v1         as components
@@ -101,25 +69,6 @@ best_feats     = ['target',
                   'credit_time_elapsed'
                   ]
 
-#best_raw_feats = ['target',
-#                  'age',
-#                  'gender',
-#                  'education_type',
-#                  'family_status',
-#                  'family_nb',
-#                  'children_nb',
-#                  'work_type',
-#                  'organization_type',
-#                  'work_exp',
-#                  'income_amount',
-#                  'income_type',
-#                  'contract',
-#                  'credit_amount',
-#                  'goods_price',
-#                  'annuity',
-#                  'credit_time_elapsed'
-#                  ]
-
 one_hot_feats = ["gender",
                  "family_status",
                  "type_suite",
@@ -139,6 +88,13 @@ label_feats   = ['contract',
                  'own_car', 
                  'own_realty'
                 ]
+
+models_names  = ['KNN', 
+                 'Bagging', 
+                 'Random Forest', 
+                 'XG Boost', 
+                 'Light GBM'
+                 ]
 
 
 
@@ -213,10 +169,10 @@ def load_data(file_name):
     state = st.text('Loading clients dataset...')
 
     try:
-        data  = pd.read_csv("results/" + file_name, index_col='id')
+        data  = pd.read_csv(file_name, index_col='id')
 
     except:
-        data  = pd.read_csv("results/" + file_name, index_col=0)
+        data  = pd.read_csv(file_name, index_col=0)
 
     if "Unnamed: 0" in data.columns.to_list():
         data = data.drop("Unnamed: 0", axis=0)
@@ -356,145 +312,8 @@ def plot_kde(dataset, var, title_var, value):
     return fig
 
 
-    # Preprocessing
 
-def complete_client_df(client_df, data_template_cols, one_hot_feats):
-    
-    full_df = pd.DataFrame(client_df, columns=data_template_cols)
-    
-    for var in one_hot_feats:
-        
-        value    = client_df[var].values[0]
-        oh_feats = [feat for feat in data_template_cols if feat.startswith(var)]
-        
-        if type(value) == str:
-
-            for feat in oh_feats:
-
-                if feat.endswith(value):
-                    full_df[feat] = 1
-
-                else:
-                    full_df[feat] = 0
-                
-    return full_df
-
-def add_poly_feat(data, poly_transformer):
-    
-    ext_data_df       = data[['ext_source_1', 
-                              'ext_source_2', 
-                              'ext_source_3', 
-                              'age', 
-                              'work_exp', 
-                             ]
-                            ]
-    
-    ext_feat          = poly_transformer.fit_transform(ext_data_df)
-    
-    ext_data_df       = pd.DataFrame(ext_feat, 
-                                     index   = ext_data_df.index,
-                                     columns = poly_transformer.get_feature_names(['ext_source_1', 
-                                                                                   'ext_source_2', 
-                                                                                   'ext_source_3',  
-                                                                                   'age', 
-                                                                                   'work_exp',
-                                                                                  ]
-                                                                                  )
-                                    )
-
-    ext_data_df       = ext_data_df.drop(['ext_source_1', 
-                                          'ext_source_2', 
-                                          'ext_source_3',  
-                                          'age', 
-                                          'work_exp', 
-                                          '1'
-                                         ], axis=1
-                                        )
-
-    ext_data_df       = ext_data_df.loc[:, ~ext_data_df.columns.duplicated()]
-    
-    data              = data.merge(ext_data_df, right_index=True, left_index=True) 
-    
-    return data
-
-def add_domain_feat(data, work_exp_outliers):
-     
-    data['work_exp_outliers'] = work_exp_outliers
-    
-    data['debt_rate']         = (data['credit_amount'] / data['income_amount'] * 100).round(2)
-    data['debt_load']         = (data['annuity'] / data['income_amount'] * 100).round(2)
-    data['credit_term']       = (data['credit_amount'] / data['annuity']).round(2)
-
-    data['cover_rate']        = (data['credit_amount'] / data['goods_price'] * 100).round(2)
-
-    data['work_exp_rate']     = (data['work_exp'] / data['age'] * 100).round(2)    
-
-    return data
-
-def standardize_client_df(client_df, domain_std_scaler):
-    
-    X         = client_df.drop('target', axis=1)
-    y         = client_df.target
-    
-    X_std     = domain_std_scaler.transform(X)
-    
-    client_df = pd.DataFrame(X_std, index=X.index, columns=X.columns)
-    
-    client_df['target'] = y
-    
-    return client_df
-
-def clean_client_df(client_df, label_encoders, iterative_imputer, poly_transformer, domain_std_scaler, 
-                    data_template_cols, label_feats, one_hot_feats):
-    
-    
-    # Encoding
-    
-    for var in label_feats:
-    
-        results        = label_encoders[var].transform(client_df[[var]])
-        client_df[var] = list(results.reshape(1, -1)[0].astype(int))
-    
-    client_df          = complete_client_df(client_df, data_template_cols, one_hot_feats)
-    
-        
-    # Cleaning
-    
-    client_df.age            = client_df.age / -365.25
-
-    work_experience_outliers = client_df.work_exp > 0
-    client_df.work_exp       = client_df.work_exp.replace({365243: np.nan}) / -365.25
-
-    
-    # Imputing
-    
-    target    = client_df[['target']]
-    X         = client_df.drop("target", axis=1)
-    
-    client_df = iterative_imputer.transform(X)
-    
-    client_df = pd.DataFrame(client_df, index=X.index, columns=X.columns)   
-    client_df = client_df.merge(target, left_index=True, right_index=True)
-    
-    
-    # Polynomial Features
-    
-    client_df = add_poly_feat(client_df, poly_transformer)
-    
-       
-    # Domain Features
-    
-    client_df = add_domain_feat(client_df, work_experience_outliers)
-    
-    
-    # Standardisation
-    
-    std_client_df = standardize_client_df(client_df, domain_std_scaler)
-    
-    return std_client_df, client_df
-
-
-    # Modelisation
+    # API
 
 def get_client_dict(client_id, raw_data):
     
@@ -504,49 +323,44 @@ def get_client_dict(client_id, raw_data):
 
     return client_data.to_dict(orient='records')[0]
 
-def get_client_df(client_dict):
+def send_request_data(serveur_url, data_dict):
     
-    client_series      = pd.Series(client_dict)
-    client_series.name = client_dict['id']
+    """ send client data through the body of a request """
     
-    client_df          = client_series.to_frame().T
+    resp        = requests.get(serveur_url, 
+                                data    = json.dumps(data_dict), 
+                                headers = {'Content-type' : 'application/json', 
+                                           'Accept'       : 'text/plain'
+                                          }
+                               )
     
-    return client_df.drop('id', axis=1)
+    return resp
 
+def get_request_data(resp, client_id):
 
-def get_threshold_scores(fbeta_results, dataset_name, model_name):
+    """ recover dataframe from data of the body of a request response """
     
-    y_test       = fbeta_results[dataset_name]['results'][model_name]['y_test']
-    y_proba      = fbeta_results[dataset_name]['results'][model_name]['y_proba']
+#     predictions_dict      = json.loads(resp.json())
+    predictions_dict      = resp.json()
 
-    thresholds   = []
-    scores       = []
-
-    for threshold in np.arange(0, 1.01, 0.01):
-
-        y_pred   = np.where(y_proba > threshold, 1, 0)
-        score    = metrics.fbeta_score(y_test, y_pred, beta=2)
-
-        thresholds.append(round(threshold, 2))
-        scores.append(score)
+    client_data           = pd.DataFrame(data    = predictions_dict['client_data'], 
+                                         columns = [client_id],
+                                         index   = predictions_dict['client_cols'],
+                                        ).T
     
-    return thresholds, scores
+    std_client_data       = pd.DataFrame(data    = predictions_dict['std_client_data'], 
+                                         columns = [client_id],
+                                         index   = predictions_dict['std_client_cols'],
+                                        ).T
 
-def predict_client(cleaned_client_df, fbeta_results, dataset_name, model_name):
+    repaid_proba          = predictions_dict['repaid_proba']
+    threshold             = predictions_dict['threshold']
+    fbeta_score           = predictions_dict['fbeta_score']
     
-    thresholds, scores = get_threshold_scores(fbeta_results, dataset_name, model_name)
+    return client_data, std_client_data, repaid_proba, threshold, fbeta_score
 
-    model              = fbeta_results[dataset_name]['results'][model_name]['model']
 
-    best_score         = max(scores)
-    best_score_idx     = scores.index(best_score)
-
-    best_threshold     = thresholds[best_score_idx]
-
-    client_X           = cleaned_client_df.drop('target', axis=1).values
-    repaid_proba       = model.predict_proba(client_X)[0][0]
-        
-    return repaid_proba, best_threshold
+    # Data Visualisation
 
 def get_client_result(repaid_proba, best_threshold):
     
@@ -559,9 +373,6 @@ def get_client_result(repaid_proba, best_threshold):
         result         = "accepted"
         
     return bar_color, result
-
-
-    # Data Visualisation
 
 @st.cache
 def get_gauge(repaid_proba, best_threshold, bar_color):
@@ -666,6 +477,7 @@ def plot_lgbm_features_importances(light_gbm, data_template_cols, top_nb=40):
     return fig
 
 
+
 ### DASHBOARD APP
 
 st.sidebar.markdown("# Navigation")
@@ -691,7 +503,7 @@ if page == "Exploration":
 
     st.text(" \n")
     st.subheader('Clients Data')
-    data = load_data("exploration_data.csv")
+    data = load_data("data/resampled_exp_data.csv")
     st.dataframe(data.head(100))
 
 
@@ -849,8 +661,7 @@ if page == "Comparison":
 
         # Data
 
-    data = load_data("exploration_data.csv")
-    #st.write(data.head(100))
+    data = load_data("data/resampled_exp_data.csv")
 
 
         # Side Panel
@@ -1060,39 +871,23 @@ if page == "Scoring":
 
         # Data & Model
 
-    data               = load_data("exploration_data.csv")
-    raw_data           = load_data("data.csv")
-
-    data_template_cols = pickle.load(open("results/data_template_cols.pickle", "rb"))
-
-    label_encoders     = pickle.load(open("results/label_encoders.pickle", "rb"))
-    iterative_imputer  = pickle.load(open("results/iterative_imputer.pickle", "rb"))
-    poly_transformer   = pickle.load(open("results/poly_transformer.pickle", "rb"))
-    domain_std_scaler  = pickle.load(open("results/domain_std_scaler.pickle", "rb"))
-
-    dataset_name       = "domain_feat"
-    model_title        = 'Light GBM'
-
-    fbeta_results      = pickle.load(open("results/fbeta_results.pickle", "rb"))
-    fb_results_dict    = fbeta_results[dataset_name]['results']
-
-    model_name         = [name for name in fb_results_dict.keys() if name.startswith(model_title)][0]
-    model              = fb_results_dict[model_name]['model']
-
-
-    #st.write(data.head(100))
-
+    data               = load_data("data/resampled_exp_data.csv")
+    raw_data           = load_data("data/resampled_data.csv")
+    
 
         # Side Panel
 
+    st.sidebar.markdown("# Model")
+
+    model_name         = st.sidebar.selectbox("", options=models_names, index=4)
+
+
     st.sidebar.markdown("# Client Infos")
 
-    client_id   = st.sidebar.selectbox("", options=data.index.tolist())
+    client_id          = st.sidebar.selectbox("", options=data.index.tolist())
+    client_dict        = get_client_dict(client_id, raw_data)
 
-    client_dict = get_client_dict(client_id, raw_data)
-    client_df   = get_client_df(client_dict)
-
-    client_data = data[data.index == float(client_id)][best_feats].drop(['family_nb', 'organization_type'], axis=1)
+    client_data        = data[data.index == float(client_id)][best_feats].drop(['family_nb', 'organization_type'], axis=1)
 
     st.sidebar.text(" \n")
 
@@ -1105,21 +900,24 @@ if page == "Scoring":
 
     if client_id not in ["Enter the ID of a client...", None, ""]:
 
+        data_dict      = {'client'     : client_dict, 
+                          'model_name' : model_name
+                         }
 
-        # Preprocessing
 
-        (std_client_df, 
-         client_df)       = clean_client_df(client_df, label_encoders, iterative_imputer, poly_transformer, domain_std_scaler, 
-                                            data_template_cols, label_feats, one_hot_feats
-                                           )
+        # Get data from Scoring API
 
-        # Modelisation
+        api_resp       = send_request_data("http://127.0.0.1:8000/predict", data_dict)
 
-        (repaid_proba, 
-         best_threshold) = predict_client(client_df, fbeta_results, dataset_name, model_name)
+        (client_data, 
+         std_client_data, 
+         repaid_proba, 
+         threshold, 
+         fbeta_score)  = get_request_data(api_resp, client_id)
+        
 
         (bar_color, 
-         result)         = get_client_result(repaid_proba, best_threshold)
+         result)       = get_client_result(repaid_proba, threshold)
 
 
         # Plot Gauge
@@ -1127,18 +925,21 @@ if page == "Scoring":
         st.text(" \n")
         st.subheader('Decision : loan {}'.format(result))
 
-        gauge = get_gauge(repaid_proba, best_threshold, bar_color)
+        gauge = get_gauge(repaid_proba, threshold, bar_color)
         st.plotly_chart(gauge)
 
 
         # Plot Force 
 
-        if model_title == 'Light GBM':
+        if model_name == 'Light GBM':
 
             st.text(" \n")
             st.subheader('Explanation : {}% repaid probability'.format(round(repaid_proba * 100, 2)))
 
-            force = get_force_plot(model, std_client_df, client_df, client_df.index[0])
+            model_dict = pickle.load(open("modelisation/domain_{}_dict.pickle".format(model_name.replace(' ', '_').lower()), "rb"))  
+            model      = model_dict['model']  
+
+            force      = get_force_plot(model, std_client_data, client_data, client_data.index[0])
             plot_shap(force)
 
 
