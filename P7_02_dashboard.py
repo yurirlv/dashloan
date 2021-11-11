@@ -329,9 +329,9 @@ def send_request_data(serveur_url, data_dict):
     
     resp = requests.get(serveur_url, 
                         data    = json.dumps(data_dict), 
-                        headers = {'Content-type' : 'application/json', 
-                                    #'Accept'       : 'text/plain'
-                                    }
+                        #headers = {'Content-type' : 'application/json', 
+                        #            #'Accept'       : 'text/plain'
+                        #            }
                         )
     
     return resp
