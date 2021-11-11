@@ -327,12 +327,12 @@ def send_request_data(serveur_url, data_dict):
     
     """ send client data through the body of a request """
     
-    resp        = requests.get(serveur_url, 
-                                data    = json.dumps(data_dict), 
-                                headers = {'Content-type' : 'application/json', 
-                                           'Accept'       : 'text/plain'
-                                          }
-                               )
+    resp = requests.get(serveur_url, 
+                        data    = json.dumps(data_dict), 
+                        headers = {'Content-type' : 'application/json', 
+                                    #'Accept'       : 'text/plain'
+                                    }
+                        )
     
     return resp
 
