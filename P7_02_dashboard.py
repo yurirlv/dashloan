@@ -329,9 +329,9 @@ def send_request_data(serveur_url, data_dict):
     
     resp = requests.get(serveur_url, 
                         data    = json.dumps(data_dict), 
-                        #headers = {'Content-type' : 'application/json', 
-                        #            #'Accept'       : 'text/plain'
-                        #            }
+                        headers = {'Content-type' : 'application/json', 
+                                    #'Accept'       : 'text/plain'
+                                    }
                         )
     
     return resp
@@ -907,7 +907,7 @@ if page == "Scoring":
 
         # Get data from Scoring API
 
-        api_resp       = send_request_data("http://127.0.0.1:8000/predict", data_dict)
+        api_resp       = send_request_data("https://dashloan.herokuapp.com/predict", data_dict) # "http://127.0.0.1:8000/predict"
 
         (client_data, 
          std_client_data, 
