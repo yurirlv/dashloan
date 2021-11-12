@@ -481,7 +481,14 @@ def plot_lgbm_features_importances(light_gbm, data_template_cols, top_nb=40):
 ### DASHBOARD APP
 
 st.sidebar.markdown("# Navigation")
-page = st.sidebar.radio("", ["Home", "Exploration", "Comparison", "Scoring", "Methodology"])
+page = st.sidebar.radio("", 
+                        ["Home", 
+                         "Exploration", 
+                         "Comparison", 
+                         "Scoring", 
+                         #"Methodology"
+                         ]
+                        )
 
 
 # HOME PAGE
